@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StyleSmart — AI Operating System for Personal Appearance</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Style<span>Smart</span></h1>
+    <p>The AI Operating System for Personal Appearance — wardrobe, fit, grooming, travel.</p>
+  </div>
+  <div id="header-stats"></div>
+</header>
+<nav id="tabs">
+  <button data-tab="dashboard" class="active">Dashboard</button>
+  <button data-tab="wardrobe">Wardrobe</button>
+  <button data-tab="outfit">What to Wear</button>
+  <button data-tab="analytics">Cost-per-Wear</button>
+  <button data-tab="fit">Fit Intelligence</button>
+  <button data-tab="grooming">Grooming</button>
+  <button data-tab="travel">Travel Packing</button>
+  <button data-tab="shopping">Smart Shopping</button>
+</nav>
+<main>
+  <!-- DASHBOARD -->
+  <section class="tab active" id="tab-dashboard">
+    <h2>Your Personal Appearance Score</h2>
+    <p class="sub">Computed from your wardrobe, rotation, grooming and spending — updated live.</p>
+    <div class="grid c2">
+      <div class="card">
+        <div class="score-ring">
+          <div><div class="num" id="score-num">–</div><div class="of">/ 100</div></div>
+          <div style="flex:1; min-width:200px" id="score-breakdown"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>At a glance</h3>
+        <div class="grid c3" id="glance"></div>
+      </div>
+    </div>
+    <div class="grid c2" style="margin-top:16px">
+      <div class="card">
+        <h3>Today's outfit — one tap</h3>
+        <p class="sub">Work, 26°C, sunny — change it on the What to Wear tab.</p>
+        <button onclick="quickOutfit()">Generate today's outfit →</button>
+        <div id="quick-outfit" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <h3>Recently worn</h3>
+        <div id="recent-outfits"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WARDROBE -->
+  <section class="tab" id="tab-wardrobe">
+    <h2>Wardrobe</h2>
+    <p class="sub">Everything you own. Add, edit, delete, and log wears.</p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="form-row">
+        <div><label>Category</label><select id="f-category"><option value="">All</option><option>top</option><option>bottom</option><option>footwear</option><option>outerwear</option><option>accessory</option><option>grooming</option><option>fragrance</option></select></div>
+        <div><label>Colour</label><input id="f-color" placeholder="e.g. navy"></div>
+        <div><label>Search</label><input id="f-search" placeholder="name or brand"></div>
+        <div><label>&nbsp;</label><button class="ghost" onclick="loadWardrobe()">Filter</button></div>
+      </div>
+    </div>
+    <div class="grid c3" id="wardrobe-grid"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Add an item</h3>
+      <div class="form-row">
+        <div><label>Name *</label><input id="a-name" placeholder="White Oxford Shirt"></div>
+        <div><label>Category *</label><select id="a-category"><option>top</option><option>bottom</option><option>footwear</option><option>outerwear</option><option>accessory</option><option>grooming</option><option>fragrance</option></select></div>
+        <div><label>Colour</label><input id="a-color" placeholder="white"></div>
+        <div><label>Brand</label><input id="a-brand" placeholder="Uniqlo"></div>
+        <div><label>Price ($)</label><input id="a-price" type="number" min="0" step="0.01" placeholder="49"></div>
+        <div><label>Size</label><input id="a-size" placeholder="M"></div>
+        <div><label>Purchase date</label><input id="a-date" type="date"></div>
+        <div><label>Material</label><input id="a-material" placeholder="cotton"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Occasions (comma separated)</label><input id="a-occasions" placeholder="work,casual"></div>
+        <div><label>Fit notes</label><input id="a-fit" placeholder="slim / regular / relaxed"></div>
+      </div>
+      <div style="margin-top:12px"><button onclick="addItem()">Add item</button></div>
+    </div>
+  </section>
+
+  <!-- OUTFIT -->
+  <section class="tab" id="tab-outfit">
+    <h2>What should I wear today?</h2>
+    <p class="sub">The engine balances colour harmony, weather, occasion — and never repeats yesterday's outfit.</p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="form-row">
+        <div><label>Occasion</label><select id="o-occasion"><option>work</option><option>casual</option><option>formal</option><option>date</option><option>gym</option><option>travel</option></select></div>
+        <div><label>Temperature (°C)</label><input id="o-temp" type="number" value="26"></div>
+        <div><label>Condition</label><select id="o-condition"><option>sunny</option><option>cloudy</option><option>rain</option><option>cold</option></select></div>
+        <div><label>&nbsp;</label><button onclick="generateOutfit()">Generate outfit</button></div>
+      </div>
+    </div>
+    <div id="outfit-result"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="tab" id="tab-analytics">
+    <h2>Cost-per-Wear Analytics</h2>
+    <p class="sub">What your wardrobe really costs you — per wear.</p>
+    <div class="grid c3" id="analytics-stats" style="margin-bottom:16px"></div>
+    <div class="card" style="margin-bottom:16px">
+      <h3>ROI ranking — cheapest per wear first</h3>
+      <div id="roi-table"></div>
+    </div>
+    <div class="grid c2">
+      <div class="card"><h3>Most worn</h3><div id="most-worn"></div></div>
+      <div class="card"><h3>Least worn (worn at least once)</h3><div id="least-worn"></div></div>
+    </div>
+  </section>
+
+  <!-- FIT -->
+  <section class="tab" id="tab-fit">
+    <h2>Fit Intelligence</h2>
+    <p class="sub">Your profile, every item's fit score, and a return-risk check before you buy.</p>
+    <div class="grid c2">
+      <div class="card">
+        <h3>Your fit profile</h3>
+        <div class="form-row">
+          <div><label>Top size</label><input id="p-top" placeholder="M"></div>
+          <div><label>Bottom size</label><input id="p-bottom" placeholder="32"></div>
+          <div><label>Footwear size</label><input id="p-footwear" placeholder="9"></div>
+          <div><label>Outerwear size</label><input id="p-outerwear" placeholder="M"></div>
+          <div><label>Fit preference</label><select id="p-pref"><option>slim</option><option>regular</option><option>relaxed</option></select></div>
+        </div>
+        <label>Body notes</label><textarea id="p-notes" rows="2"></textarea>
+        <div style="margin-top:12px"><button onclick="saveProfile()">Save profile</button></div>
+      </div>
+      <div class="card">
+        <h3>Return-risk estimator</h3>
+        <p class="sub">Thinking of buying something? Check the risk first.</p>
+        <div class="form-row">
+          <div><label>Category</label><select id="r-category"><option>top</option><option>bottom</option><option>footwear</option><option>outerwear</option><option>accessory</option></select></div>
+          <div><label>Size</label><input id="r-size" placeholder="M"></div>
+          <div><label>Brand</label><input id="r-brand" placeholder="Zara"></div>
+          <div><label>Colour</label><input id="r-color" placeholder="navy"></div>
+          <div><label>Price ($)</label><input id="r-price" type="number" min="0" placeholder="79"></div>
+        </div>
+        <div style="margin-top:12px"><button onclick="checkRisk()">Estimate return risk</button></div>
+        <div id="risk-result" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Fit score per item</h3>
+      <div id="fit-table"></div>
+    </div>
+  </section>
+
+  <!-- GROOMING -->
+  <section class="tab" id="tab-grooming">
+    <h2>Grooming Planner</h2>
+    <p class="sub">Routines, expiry warnings, and today's checklist.</p>
+    <div class="grid c2">
+      <div class="card">
+        <h3>Today's routine</h3>
+        <div id="routine-list"></div>
+      </div>
+      <div class="card">
+        <h3>Products &amp; expiry</h3>
+        <div id="grooming-list"></div>
+        <h3 style="margin-top:16px">Add a product</h3>
+        <div class="form-row">
+          <div><label>Name *</label><input id="g-name" placeholder="Face Cleanser"></div>
+          <div><label>Category</label><select id="g-cat"><option>skincare</option><option>hair</option><option>fragrance</option><option>body</option></select></div>
+          <div><label>Routine</label><select id="g-routine"><option>morning</option><option>evening</option><option>both</option></select></div>
+          <div><label>Expiry date</label><input id="g-expiry" type="date"></div>
+        </div>
+        <div style="margin-top:12px"><button onclick="addGrooming()">Add product</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAVEL -->
+  <section class="tab" id="tab-travel">
+    <h2>Travel Packing</h2>
+    <p class="sub">A packing list built only from what you actually own — never items you don't have.</p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="form-row">
+        <div><label>Destination *</label><input id="t-dest" placeholder="Tokyo"></div>
+        <div><label>Days</label><input id="t-days" type="number" min="1" max="30" value="4"></div>
+        <div><label>Weather</label><select id="t-weather"><option>sunny</option><option>rain</option><option>cold</option><option>hot</option><option>cloudy</option></select></div>
+        <div><label>Occasions</label><select id="t-occ" multiple size="3"><option selected>casual</option><option>work</option><option>formal</option><option>date</option><option>gym</option><option>travel</option></select></div>
+      </div>
+      <div style="margin-top:12px"><button onclick="generatePacking()">Generate packing list</button></div>
+    </div>
+    <div id="packing-result"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Saved packing lists</h3>
+      <div id="saved-packings"></div>
+    </div>
+  </section>
+
+  <!-- SHOPPING -->
+  <section class="tab" id="tab-shopping">
+    <h2>Smart Shopping — do I already own something similar?</h2>
+    <p class="sub">Check before you buy. The app compares against your real wardrobe.</p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="form-row">
+        <div><label>Category</label><select id="s-category"><option>top</option><option>bottom</option><option>footwear</option><option>outerwear</option><option>accessory</option><option>fragrance</option></select></div>
+        <div><label>Colour</label><input id="s-color" placeholder="navy"></div>
+        <div><label>Price ($)</label><input id="s-price" type="number" min="0" placeholder="89"></div>
+        <div><label>&nbsp;</label><button onclick="checkShopping()">Check</button></div>
+      </div>
+    </div>
+    <div id="shopping-result"></div>
+  </section>
+</main>
+<footer>StyleSmart — deterministic rules engine, not a vision model. See README.md for honest limits.</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
